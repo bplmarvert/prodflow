@@ -11,6 +11,7 @@ app.use(express.json())
 app.get('/site-info', (req, res) => {
     res.json(siteProd)
 })
+
 let siteProd = {
     nom: 'Amilly',
     adresse: {rue: "Rue de la big pharma", ville:"Amilly"},
@@ -24,7 +25,6 @@ let siteProd = {
         {nom: 'l7', nbProduits: 780} 
     ]
   };
-
 
 app.post('/new-production-line', (req, res) => {
     console.log(req.body.nom);
@@ -54,7 +54,6 @@ app.post('/production-line/update', (req, res) => {
     res.send("data entered");
 })  // il faudrait passer à /production-line/:li/update
     // supposition: en créant un middleware
-
 
 app.post('/production-line', (req, res) => {
     console.log(req.body.nom);
