@@ -1,0 +1,64 @@
+h1{
+   font: 45pt;
+   text-align: center; /* Centrer un texte */ 
+   font-family: verdana;
+ }
+ h2{
+    font: 20pt;
+    text-align: center; /* Centrer un texte */ 
+    font-family: verdana;
+  }
+ li{
+    list-style-type: none;
+ }
+ h1:hover {
+    background-color: gold;
+  }
+
+/*div{
+    display: inline-block;  /* Affiche sur 2 colonnes grace au 49% */ 
+                            /* display: inline; /* Affiche sur une ligne et ne prends que la place nécessaire */ 
+/*    width: 39%; 
+    color: red;
+    vertical-align: top;
+}*/
+#row1{
+	display: flex;
+	justify-content: space-between;
+    flex-direction: row;
+    height : 100;
+}
+#row1 p{
+    width:25%; 
+    margin: 0;
+}
+.divHaut{
+    display: flex; /* sur le parent de ce aue l'on veut mettre en flex */
+    vertical-align: middle;
+    justify-content:space-evenly;
+    height: 500px;
+    Border : 1px solid black ;
+}
+img{
+   height : 200px;
+   vertical-align: middle;
+}
+/*
+.three-columns-size{
+    width: 12%;
+    color: green;
+    vertical-align: low;
+    Border : 1px solid black ;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+.div_block{
+    display: block;
+    width: 99%; 
+}
+.alignement_vertical_haut{
+    vertical-align: top;
+}*/
+
+
+

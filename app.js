@@ -6,21 +6,14 @@ const port = 3000
 app.use(express.static("public"))
 app.use(express.json())
 
-app.get('/', (req, res) => {
-
-    let data = {
-        age: 22,
-        name:"Jane"
-    }
-    res.json(data)
-})
+// const path = require(); // no need a priori
 
 app.get('/site-info', (req, res) => {
     res.json(siteProd)
 })
 let siteProd = {
     nom: 'Amilly',
-    adresse: {rue: "rue de la big pharma", ville:"Amilly"},
+    adresse: {rue: "Rue de la big pharma", ville:"Amilly"},
     lignes: [
         {nom: 'l1', nbProduits: 100},
         {nom: 'l2', nbProduits: 1000},
@@ -32,11 +25,6 @@ let siteProd = {
     ]
   };
 
-
-app.post('/post-example', (req, res) => {
-
-    res.send("data received")
-})
 
 app.post('/new-production-line', (req, res) => {
     console.log(req.body.nom);

@@ -1,4 +1,88 @@
 <html>
+    <head>
+        <link rel="stylesheet" href="/css/style.css" />
+    </head>
+    <body>
+       <h1>Projet</h1>
+       <h2>système de suivi des lignes de production</h2>
+       <div id="app"> </div>  
+       <div id = ajout 'http://localhost:3000/new-production-line'>
+            <form id = "ajout"> <!--</form> action="/new-production-line/" method = "POST"> -->
+                <label for="nom"> Ligne à ajouter :</label>
+                <input type="text" id="nom" name="nom" />  
+                <div class = "button">
+                    <button type="submit"> OK pour ajout</button>
+                </div>                 
+            </form>
+               <!-- http://localhost:3000/static//production-line/update -->
+            </div>
+       <script>
+            // Affichage de l'information d'un site
+            function ShowSiteData(siteInfo){
+                //return '<ul><li>' + siteData.firstname + "</li></ul>" + 
+                let nb = siteInfo.lignes.length;
+                let obj = siteInfo.lignes
+                let lines = obj.map(forMap).join("")  // tableau à transformer en texte
+                console.log(lines)
+                return `<ul>
+                    <li>Site de: ${siteInfo.nom}</li>
+                    <li>Adresse: ${siteInfo.adresse.rue} ${siteInfo.adresse.ville}</li>
+                    ${lines}
+                 </ul>`
+            }
+                 
+            function forMap(obj){
+                return `<li>Line ${obj.nom} comprimés fabriqués ${obj.nbProduits} </li>`
+                }
+
+            function addHtmlToElement(html, elementSelector){
+
+                let element = document.querySelector(elementSelector)
+                element.innerHTML = html
+            }
+
+            //send a request to get Site data
+            //from the server
+            let promise = fetch("/site-info/") //async func
+
+            promise.then(response => { //response from server
+                return response.json()
+            }).then(siteInfo =>{ 
+                console.log(siteInfo.lignes)
+                let html = ShowSiteData(siteInfo)
+                addHtmlToElement(html, "#app")
+            })
+
+            // ajout d'une ligne 
+            document.querySelector("body").addEventListener("submit", event => {
+                    event.preventDefault()
+            let nom = document.getElementById("nom").value
+            console.log(nom)
+            //ligne = JSON.serialize({"nom": nom, "nbProduits": 0})
+            fetch('http://localhost:3000/new-production-line',{
+                method: POST, 
+                headers:{
+                    'Accept': 'application/json', 
+                    'Content-Type': 'application/json'  
+                },
+                body: JSON.stringify({'nom': nom})
+            })
+            .then(function(res) {
+                if (res.ok) {
+                    return res.json();
+                }
+            })
+            .then(function(nom) {
+                document
+                    .getElementById("nom")
+                    .innerText = value.postData.text;
+                });
+            })
+            console.log(nom)
+        </script>
+    </body>
+</html>
+<!--<html>
     <body>
         <script>
             function addToPage(userData){
@@ -21,4 +105,4 @@
                 .then(addToPage)
         </script>
     </body>
-</html>
+</html> -->
