@@ -9,31 +9,28 @@
         <div id="app"> </div>  
 
         <!-- Ajout d'une ligne de production -->
-
-        <div id = 'divajout' 'http://localhost:3000/new-production-line'>
+        <div id = 'divajout' >
             <form id="ajout"> <!--</form> action="/new-production-line/" method = "POST"> -->
                 <label for="nom"> Ligne à ajouter: </label>
                 <input type="text" id="nom" name="nom" />  
                 <div class = "button">
                     <button type="submit"> OK pour ajout</button>
-                </div>                 
+                </div>          
             </form>
         </div>
 
         <!-- Modification du nombre de comprimés d'une ligne de production -->
-
-        <!-- <div id = 'modif' 'http://localhost:3000/production-line/update'>
-            <form id="modif"> --><!--</form> action="/new-production-line/" method = "POST"> -->
-                <!--<label for="nbli">  No de la ligne: </label> -->
-        <!--        <p id="pnbli">  No de la ligne: </p>
+        <div id = 'modif' >
+            <form id="modif"> <!--</form> action="/new-production-line/" method = "POST"> -->
+                <p id="pnbli">  No de la ligne: </p>
+                <input type="text" id="nomli" name="nom" />  
                 <label for="nbcp">  Nombre de comprimés: </label>
                 <input type="text" id="nbcp" name="nbcp" />  
                 <div class = "button">
                     <button type="submit"> Poster la modif </button>
                 </div>                 
             </form>
-        </div>-->
-
+        </div>
 
         <script>
 
@@ -46,8 +43,8 @@
                 let lines = obj.map(forMap).join("")  // tableau à transformer en texte
                 console.log(lines)
                 return `<ul>
-                    <li>Site de: ${siteInfo.nom}</li>
-                    <li>Adresse: ${siteInfo.adresse.rue} ${siteInfo.adresse.ville}</li>
+                    <li>Site de: ${siteInfo.nom} </li>
+                    <li>Adresse: ${siteInfo.adresse.rue} ${siteInfo.adresse.ville} </li>
                     ${lines}
                  </ul>`
             }
@@ -61,7 +58,7 @@
             function selectTheLine(siteInfo){
                 let nb = siteInfo.lignes.length;
                 let obj = siteInfo.lignes
-                let lines = obj.map(forMap1).join("")  // tableau à transformer en texte
+                let lines = obj.map(forMap).join("")  // tableau à transformer en texte
                 console.log(lines)
                 return `<p> Choix de la ligne sur laquelle modifier le nombre de comprimés: </p>
                     <SELECT id='nbli' NAME="listline">
@@ -69,28 +66,32 @@
                     </SELECT>`
             }
 
-            /*function forMap1(obj){
-                return `<OPTION value="line ${obj.nom} ${obj.nom     comprimés fabriqués: ${obj.nbProduits}>`
-            }*/
-
             function addHtmlToElement(html, elementSelector){
-
                 let element = document.querySelector(elementSelector)
                 element.innerHTML = html
             }
 
             //send a request to get Site data from the server
-            let promise = fetch("/site-info/") //async func
+            fetch("/site-info/").then(response => { //response from server
+                    return response.json()
+                }).then(siteInfo =>{ 
+                    console.log(siteInfo.lignes)
+                    let html = ShowSiteData(siteInfo)  // pour l'affichage des infos
+                    addHtmlToElement(html, "#app")
+                })
 
-            promise.then(response => { //response from server
+            //A REVOIR DUPLICATE send a request to get Site data from the server
+            let promise1 = fetch("/site-info/") //async func
+
+
+            promise1.then(response => { //response from server
                 return response.json()
             }).then(siteInfo =>{ 
                 console.log(siteInfo.lignes)
-                let html = ShowSiteData(siteInfo)  // pour l'affichage des infos
-                addHtmlToElement(html, "#app")
-     /*           let html1 = selectTheLine(siteInfo) // pour la liste de sélection
-                addHtmlToElement(html1,"#nbli") */
+                let html1 = selectTheLine(siteInfo) // pour la liste de sélection
+                addHtmlToElement(html1,"#pnbli") 
             })
+
 
             // ajout d'une ligne 
             let url = 'http://localhost:3000/new-production-line'
@@ -106,21 +107,45 @@
                 return response.JSON;
             })
 
-            // modification du nombre de cp
-            /*let url1 = 'http://localhost:3000/production-line/update'
+
+            // Code pour utilisation de map - choix de la ligne pour mise a jour des comprimés
+             function forCp(obj){
+                return `<option value="line"> ${obj.nom} </option>`
+            }
+
+            // creation du code html: affiche la liste des lignes pour choix 
+            function selectTheLine(siteInfo){
+                let nb = siteInfo.lignes.length;
+                let obj = siteInfo.lignes;
+                let lines = obj.map(forCp).join("")  // tableau à transformer en texte
+                console.log(lines)
+                return `<p> Choix de la ligne sur laquelle modifier le nombre de comprimés: </p>
+                    <select id='nbli' NAME="listline">
+                        ${lines}
+                    </SELECT>`
+            }
+
+
+            // a inclure dans promise suite a correction ci-dessus
+
+
+           // modification du nombre de cp
+            
+
             document.querySelector("#modif").addEventListener("submit", event => { 
                 event.preventDefault()
-            let nom = document.getElementById("nbli").value 
-            let nbcp = document.getElementById("nbcp").value 
-            console.log ("nom ligne update : ", nom)
-            console.log ("nbcp : ", nbcp)
-            const response = fetch(url1, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'nom': nom, 'nbProduits': nbcp})
-            });
-            //return response.JSON;
-        })*/
+                let nom = document.getElementById("nomli").value
+                let nbcp = document.getElementById("nbcp").value 
+                console.log ("nom ligne update : ", nom)
+                let url1 = `http://localhost:3000/production-line/${nom}/update`
+                console.log ("nbcp : ", nbcp)
+                const response = fetch(url1, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({'nom': nom, 'nbProduits': nbcp})
+                });
+            return response.JSON;
+        })
 
         </script>
     </body>

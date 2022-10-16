@@ -45,22 +45,15 @@ app.post('/production-line/:id/update', (req, res) => {
     res.send("data entered");
 })
 
-app.post('/production-line/update', (req, res) => {
+/*app.post('/production-line/update', (req, res) => {
     console.log(req.body.nom);
     id = req.body.nom;
     let nb = req.body.nbProduits;
     const index = siteProd.lignes.findIndex(ligne => ligne.nom === id)
     siteProd.lignes[index].nbProduits = nb;
     res.send("data entered");
-})  // il faudrait passer à /production-line/:li/update
+})*/  // il faudrait passer à /production-line/:li/update
     // supposition: en créant un middleware
-
-app.post('/production-line', (req, res) => {
-    console.log(req.body.nom);
-    let nb = req.body.nbProduits;
-    siteProd.lignes.push([nom=leNom, nbProduits=0]);
-    res.send("data entered");
-})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
