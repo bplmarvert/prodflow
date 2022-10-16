@@ -33,17 +33,17 @@ app.post('/new-production-line', (req, res) => {
     res.send("data entered");
 })
 
-// Faire en sorte d’avoir une méthode 
-// /production-line/:id/update qui permet de mettre à jour 
+// méthode /production-line/:id/update qui permet de mettre à jour 
 // le nombre d’unité produite par l’unité de production
 
-/* app.post('/production-line/l1/update', (req, res) => {
+app.post('/production-line/:id/update', (req, res) => {
     console.log(req.body.nom);
     let nb = req.body.nbProduits;
-    const index = siteProd.lignes.findIndex(ligne => ligne.nom === 'l1')
+    let nl = req.body.nom;
+    const index = siteProd.lignes.findIndex(ligne => ligne.nom === nl)
     siteProd.lignes[index].nbProduits = nb;
     res.send("data entered");
-}) */ // celafonctoinne pour une ligne à généraliser
+})
 
 app.post('/production-line/update', (req, res) => {
     console.log(req.body.nom);
