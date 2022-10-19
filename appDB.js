@@ -1,11 +1,19 @@
 const express = require('express')
+const mysql = require('mysql2')
+let dbutils = require(./src/dbutils)
 const app = express()
 const port = 3000
 
 app.use(express.static("public"))
 app.use(express.json())
 
-// const path = require(); // no need a priori
+let connection = dbutils.createConnection("root", "Quercinus", "projetlignes")
+
+connection.query("SELECT * FROM LIGNES",(err,data) => {
+    console.log(err)
+    console.log(data)
+    connection.end()
+})
 
 app.get('/site-info', (req, res) => {
     res.json(siteProd)
@@ -28,15 +36,9 @@ let siteProd = {
 app.post('/new-production-line', (req, res) => {
     console.log(req.body.nom);
     let leNom = req.body.nom;
-    console.log(siteProd.lignes)
-    const index = siteProd.lignes.findIndex(ligne => ligne.nom === leNom)
-    console.log("index = ",index)
-    if (index != -1)
-        res.send("Cette ligne existe déjà");
-    else{
-        siteProd.lignes.push({nom:leNom, nbProduits:0});
-        res.send("data entered");
-}})
+    siteProd.lignes.push({nom:leNom, nbProduits:0});
+    res.send("data entered");
+})
 
 // méthode /production-line/:id/update qui permet de mettre à jour 
 // le nombre d’unité produite par l’unité de production
