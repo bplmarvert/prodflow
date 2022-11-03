@@ -19,7 +19,7 @@ app.get('/site-info', (req, res) => {
     res.json(siteProd)
 })
 
-let siteProd = {
+/*let siteProd = {
     nom: 'Amilly',
     adresse: {rue: "Rue de la big pharma", ville:"Amilly"},
     lignes: [
@@ -31,7 +31,7 @@ let siteProd = {
         {nom: 'l6', nbProduits: 500},
         {nom: 'l7', nbProduits: 780} 
     ]
-  };
+  };*/
 
 app.post('/new-production-line', (req, res) => {
     console.log(req.body.nom);

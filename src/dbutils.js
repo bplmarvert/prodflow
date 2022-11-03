@@ -1,54 +1,101 @@
-const express = require('express') 
-const app = express()
-const port = 3000
+const mysql = require("mySQL2");
 
-console.log("Hello");
+function dataSiteDB(err, data) {
+  // function to call back
 
-//middleware = extension d'express = function
-
-
-app.use(express.static("public"))
-app.use(express.json())
-
-/**
- * Returns user data as json
- */
- app.get("/user", (request, response) => {
-
-  console.log(request.method)
-  let data = {
-      "firstname": "paul",
-      "age": 22
+  console.log("data = ", data);
+  if (err) {
+    console.log("err dans datasiteDB", err);
   }
+  console.log("Dans DataSiteDB");
+  //for (let i in data)
+  //    const index = siteProd.lignes.findIndex(ligne => ligne.nom === leNom)
+  //console.log("index = ",index)
+  //     siteProd.lignes.push({nom:leNom, nbProduits:0});
+  //   res.send("data entered");
+  console.log("err = ", err);
 
-  response.json(data)
-})
+  //console.log("site = ",site)
+  return data;
+}
 
-/**
- * Returns production line data as json
- */
-app.get("/production-line", (request, response) => {
+// permet de declencher des fonctions avant l'execution de la requete
+// next appelle le middleware suivant
+function loggeMiddleware(req, res, next) {
+  console.log("a new req was done");
+  next();
+}
 
-  console.log(request.method)
-  let data = {
-    "name": "marcoussi",
-    "productionRate": 200
-  }
-  response.json(data)
+/*app.get('/api/user', (request, response) =>{
+    let data = {
+        user: "lala",
+        age: 22
+    }
+    response.json(data) ; // dans postman ce sera du JSON
+})*/
 
-})
+/*app.post("/new-user",(request, response) =>{
 
-/**
- * Let send data from the client and display it
- */
-app.post("/post-data", (request, response) => {
-  
-  let data = request.body
-  console.log(data)
+    console.log("request.body", request.body)
+    response.send("request receive !")
+})*/
 
-  response.json({'message': 'data received'})
-})
+function createConnection(username, password, database) {
+  let dbConfig = {
+    user: username,
+    password: password,
+    database: database,
+  };
+  let connection = mysql.createConnection(dbConfig);
+  return connection;
+}
+/*
+function getUsers(connection){
+    connection.query("SELECT * from USERS", (erreur, data) =>{
+        console.log(erreur);
+        console.log(data);
+    });
+}*/
+function lineInserted(err, data) {
+  console.log(err);
+  console.log(data[0]);
+}
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+function insertLine(connection, lineData, lineInserted) {
+  console.log(lineData);
+  connection.query(
+    "INSERT INTO LIGNES (nom, nbProduits, siteId) VALUES (?, ?, ?);",
+    [lineData.nom, lineData.nbProduits, lineData.siteId],
+    lineInserted
+  );
+}
+
+function modifyNbCp(connection, lineData) {
+  console.log(lineData);
+  connection.query(
+    `UPDATE LIGNES set nbProduits = ? WHERE siteId = ? and nom = ?;`,
+    [lineData.nbProduits, lineData.siteId, lineData.nom]
+  );
+}
+
+function getSite(connection, onSiteDataReceive) {
+  // fonction to callback en arg sans ()
+
+  connection.query(
+    "SELECT s.siteId, s.siteNom, s.adresse, s.ville, l.nom, l.nbProduits \
+                    FROM SITE s join LIGNES l where s.siteId = l.siteId order by s.siteId, l.nom;",
+    onSiteDataReceive
+  ); // onSiteDataReceive recoit un tableau d'objets
+}
+
+function endConnection(connection) {
+  connection.end(); // a faire
+}
+
+module.exports = {
+  createConnection: createConnection,
+  getSite: getSite,
+  endConnection: endConnection,
+  insertLine: insertLine,
+  modifyNbCp: modifyNbCp,
+};

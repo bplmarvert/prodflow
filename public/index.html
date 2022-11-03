@@ -9,104 +9,110 @@
         <div id="app"> </div>  
 
         <!-- Ajout d'une ligne de production -->
-        <div id = 'divajout' >
+        <div id = 'divajout' >  
+            <p>Ajout d'une ligne à un site:</p>
             <form id="ajout"> <!--</form> action="/new-production-line/" method = "POST"> -->
                 <label for="nom"> Ligne à ajouter: </label>
                 <input type="text" id="nom" name="nom" />  
-                <div class = "button">
+                <label for="siteId"> du site no : </label>
+                <input type="text" id="siteId" name="siteId" />                  
+                <span class = "button">
                     <button type="submit"> OK pour ajout</button>
-                </div>          
+                </span>          
             </form>
         </div>
 
         <!-- Modification du nombre de comprimés d'une ligne de production -->
         <div id = 'modif' >
-            <form id="modif"> <!--</form> action="/new-production-line/" method = "POST"> -->
-                <p id="pnbli">  No de la ligne: </p>
+            <form id="modifi"> <!--</form> action="/new-production-line/" method = "POST"> -->
+                <span id="pnbli">  Ligne no: </span>
                 <input type="text" id="nomli" name="nom" />  
                 <label for="nbcp">  Nombre de comprimés: </label>
                 <input type="text" id="nbcp" name="nbcp" />  
-                <div class = "button">
+                <label for="forSite">  du site no :  </label>
+                <input type="text" id="forSite" name="forSite" />  
+                <span class = "button">
                     <button type="submit"> Poster la modif </button>
-                </div>                 
+                </span>                 
             </form>
         </div>
 
         <script>
 
             // Affichage de l'information d'un site
-
-            function ShowSiteData(siteInfo){
-                //return '<ul><li>' + siteData.firstname + "</li></ul>" + 
-                let nb = siteInfo.lignes.length;
-                let obj = siteInfo.lignes
-                let lines = obj.map(forMap).join("")  // tableau à transformer en texte
-                console.log(lines)
-                return `<ul>
-                    <li>Site de: ${siteInfo.nom} </li>
-                    <li>Adresse: ${siteInfo.adresse.rue} ${siteInfo.adresse.ville} </li>
-                    ${lines}
-                 </ul>`
-            }
+            //send a request to get Site data from the server
+            fetch('site_info').then(response => { //response from server
+                   return response.json()
+                }).then(data =>{ 
+                    let html = ShowSiteData(data)  // pour l'affichage des infos
+                    addHtmlToElement(html, "#app")
+                }
+            )
 
             function forMap(obj){
                 return `<li>Line ${obj.nom}       comprimés fabriqués: ${obj.nbProduits}</li>`
             }
 
+            function ShowSiteData(siteInfo){  //fonctionne mais pb localhost 3000 unknown
+                //let lines = siteInfo.map(forMap).join("")  // tableau à transformer en texte
+                console.log("consoleLog de siteInfo dans ShowSiteData", siteInfo)
+                console.log(siteInfo)
+                console.log('Dans ShowSiteData')
+                let texteHtml = '';
+                for (let i = 0; i < siteInfo.length; ++i){
+                    if (i == 0) {
+                        texteHtml += `<h3>                ${siteInfo[i].siteId}) Site de:   ${siteInfo[i].siteNom} </h3>
+                            <p >Adresse:   ${siteInfo[i].adresse}   ${siteInfo[i].ville} </p> <ul>`;
+                    } else {
+                        if ((siteInfo[i].siteNom) != (siteInfo[i-1].siteNom)){
+                        console.log(((i == 0) || (i>0 && ((siteInfo[i].nom) != (siteInfo[i-1].nom)))));
+                        texteHtml += `</ul><h3>               ${siteInfo[i].siteId}) Site de:   ${siteInfo[i].siteNom} </h3>
+                            <p >Adresse:   ${siteInfo[i].adresse}   ${siteInfo[i].ville} </p><ul>`;
+                        //console.log("texteHTML = ", texteHtml);
+                        }
+                    }
+                    texteHtml += `<li>Line ${siteInfo[i].nom}       comprimés fabriqués: ${siteInfo[i].nbProduits}</li>`;
+                }
+                texteHtml += `</ul>`;
+                return texteHtml;
+            }
+
             // Sélection des lignes d'un site
 
-            function selectTheLine(siteInfo){
-                let nb = siteInfo.lignes.length;
-                let obj = siteInfo.lignes
-                let lines = obj.map(forMap).join("")  // tableau à transformer en texte
+             function addHtmlToElement(html, elementSelector){
+                let element = document.querySelector(elementSelector)
+                element.innerHTML = html
+            }
+
+            // ajout d'une ligne
+            let url = 'http://localhost:3000/new-production-line'
+            document.querySelector("#divajout").addEventListener("submit", event => { 
+                    event.preventDefault()
+                    let nom = document.getElementById("nom").value;
+                    let siteId = Number(document.getElementById("siteId").value);
+                    let nbProduits = 0;
+                    console.log('************************')
+                    console.log ("nom de la ligne: ", nom)
+                    console.log ("siteId: ", siteId)
+                    const response = fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({'nom': nom, 'nbProduits': nbProduits, 'siteId': siteId}) // body data type must match "Content-Type" header
+                });
+                return response.JSON;
+            })
+
+            //send a request to get Site data from the server
+               /*function selectTheLine(siteInfo){
+                //let nb = siteInfo.lignes.length;
+                //let obj = siteInfo.lignes
+                let lines = siteInfo.map(forMap).join("")  // tableau à transformer en texte
                 console.log(lines)
                 return `<p> Choix de la ligne sur laquelle modifier le nombre de comprimés: </p>
                     <SELECT id='nbli' NAME="listline">
                         ${lines}
                     </SELECT>`
-            }
-
-            function addHtmlToElement(html, elementSelector){
-                let element = document.querySelector(elementSelector)
-                element.innerHTML = html
-            }
-
-            //send a request to get Site data from the server
-            fetch("/site-info/").then(response => { //response from server
-                    return response.json()
-                }).then(siteInfo =>{ 
-                    console.log(siteInfo.lignes)
-                    let html = ShowSiteData(siteInfo)  // pour l'affichage des infos
-                    addHtmlToElement(html, "#app")
-                })
-
-            //A REVOIR DUPLICATE send a request to get Site data from the server
-            let promise1 = fetch("/site-info/") //async func
-
-
-            promise1.then(response => { //response from server
-                return response.json()
-            }).then(siteInfo =>{ 
-                console.log(siteInfo.lignes)
-                let html1 = selectTheLine(siteInfo) // pour la liste de sélection
-                addHtmlToElement(html1,"#pnbli") 
-            })
-
-
-            // ajout d'une ligne 
-            let url = 'http://localhost:3000/new-production-line'
-            document.querySelector("#divajout").addEventListener("submit", event => { 
-                    event.preventDefault()
-                let nom = document.getElementById("nom").value 
-                console.log ("nom : ", nom)
-                const response = fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({'nom': nom}) // body data type must match "Content-Type" header
-                });
-                return response.JSON;
-            })
-
+            }*/
 
             // Code pour utilisation de map - choix de la ligne pour mise a jour des comprimés
              function forCp(obj){
@@ -115,8 +121,8 @@
 
             // creation du code html: affiche la liste des lignes pour choix 
             function selectTheLine(siteInfo){
-                let nb = siteInfo.lignes.length;
-                let obj = siteInfo.lignes;
+                //let nb = siteInfo.lignes.length;
+                let obj = siteInfo; //.lignes;
                 let lines = obj.map(forCp).join("")  // tableau à transformer en texte
                 console.log(lines)
                 return `<p> Choix de la ligne sur laquelle modifier le nombre de comprimés: </p>
@@ -125,23 +131,27 @@
                     </SELECT>`
             }
 
-            // modification du nombre de cp           
 
-            document.querySelector("#modif").addEventListener("submit", event => { 
+            // ****************************************************************************************************** //
+            // modification du nombre de cp           
+            document.querySelector("#modif").addEventListener("submit", event => {
                 event.preventDefault()
+                let idSite = document.getElementById("forSite").value
+                console.log("idSite = ", idSite, "typeof(idSite) = ", typeof(idSite));
                 let nom = document.getElementById("nomli").value
                 let nbcp = document.getElementById("nbcp").value 
                 console.log ("nom ligne update : ", nom)
-                let url1 = `http://localhost:3000/production-line/${nom}/update`
+                let url1 = `http://localhost:3000/Change_nbCp`///${nom}/${nbcp}`
                 console.log ("nbcp : ", nbcp)
+                console.log (url1);
+                console.log ("le fetch de l'ajout de Cp")
                 const response = fetch(url1, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({'nom': nom, 'nbProduits': nbcp})
+                    body: JSON.stringify({'siteId': idSite, 'nom': nom, 'nbProduits': nbcp})
                 });
-            return response.JSON;
-        })
-
+                return response.JSON;
+            })
         </script>
     </body>
 </html>

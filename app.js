@@ -1,17 +1,48 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require("express");
+const app = express();
+const port = 3000;
 
-app.use(express.static("public"))
-app.use(express.json())
+const dbutils = require("./src/dbutils.js");
 
-// const path = require(); // no need a priori
+app.use(express.static("public"));
+app.use(express.json());
 
-app.get('/site-info', (req, res) => {
-    res.json(siteProd)
-})
+/*app.get('/site_info', (req, res) => {
+    
+    // definir la fonction de rappel dans la fonction
+    function onSiteDataReceive(err, data){ // passée en callback à get site
+        if (err) {
+            console.log("erreur dans onSiteDataReceive ", err)
+            return
+        }
+        res.json(data) 
+        console.log("sortie de onSiteDataReceiver, les données sont OK") // res.json termine la connection ne pas mettre de connection.end()
+        //connection.end()data en sortie de onSiteDataReceive appelée par app.get', data, "après dat
+    }
+    let connection = dbutils.createConnection('root', 'Quercinus', 'projetlignes')
+    //console.log ('connection établie')
+    let siteProd = dbutils.getSite(connection, onSiteDataReceive)
+})*/
 
-let siteProd = {
+app.get("/site_info", (req, res) => {
+  // version courte faite avec Laurent
+  let connection = dbutils.createConnection(
+    "root",
+    "Quercinus",
+    "projetlignes"
+  );
+
+  let siteProd = dbutils.getSite(connection, (err, data) => {
+    if (err) {
+      console.log("err ", err);
+    }
+    //console.log("err ", err)
+    //console.log(data)
+    res.json(data);
+  });
+}); // version =>
+
+/*let siteProd = {
     nom: 'Amilly',
     adresse: {rue: "Rue de la big pharma", ville:"Amilly"},
     lignes: [
@@ -23,9 +54,9 @@ let siteProd = {
         {nom: 'l6', nbProduits: 500},
         {nom: 'l7', nbProduits: 780} 
     ]
-  };
+  };*/
 
-app.post('/new-production-line', (req, res) => {
+/*app.post('/new-production-line', (req, res) => {
     console.log(req.body.nom);
     let leNom = req.body.nom;
     console.log(siteProd.lignes)
@@ -36,31 +67,74 @@ app.post('/new-production-line', (req, res) => {
     else{
         siteProd.lignes.push({nom:leNom, nbProduits:0});
         res.send("data entered");
-}})
+}})*/
 
-// méthode /production-line/:id/update qui permet de mettre à jour 
+app.post("/new-production-line", (req, res) => {
+  console.log(req.body);
+  //console.log(req.params)
+  let leNom = req.body.nom;
+  let id = req.params.id;
+  let connection = dbutils.createConnection(
+    "root",
+    "Quercinus",
+    "projetlignes"
+  );
+
+  let siteProd = dbutils.insertLine(connection, req.body, (err, data) => {
+    if (err) {
+      console.log("err ", err);
+    }
+    //console.log("err ", err)
+    //console.log(data)
+    res.json(data);
+  });
+  /*const index = siteProd.lignes.findIndex(ligne => ligne.nom === leNom)
+    console.log("index = ",index)
+    if (index != -1)
+        res.send("Cette ligne existe déjà");
+    else{
+        siteProd.lignes.push({nom:leNom, nbProduits:0});
+        res.send("data entered");*/
+});
+
+// méthode /production-line/:id/update qui permet de mettre à jour
 // le nombre d’unité produite par l’unité de production
 
-app.post('/production-line/:id/update', (req, res) => {
-    console.log(req.body.nom);
-    let nb = req.body.nbProduits;
-    let nl = req.body.nom;
-    const index = siteProd.lignes.findIndex(ligne => ligne.nom === nl)
-    siteProd.lignes[index].nbProduits = nb;
-    res.send("data entered");
-})
+app.post("/Change_nbCp", (req, res) => {
+  // /:siteId
+  console.log("ligne 105", req.body);
+  let nbProduits = parseInt(req.body.nbProduits); // params dans la ligne de commande
+  console.log("ligne 107 nbProduits = ", nbProduits);
+  let nbLine = req.body.nom;
+  let siteId = parseInt(req.body.siteId);
+  console.log(
+    "nbProduits = ",
+    nbProduits,
+    " nbLine = ",
+    nbLine,
+    " siteId = ",
+    siteId
+  );
+  let connection = dbutils.createConnection(
+    "root",
+    "Quercinus",
+    "projetlignes"
+  );
+  modifyNbCp(connection, {
+    nbProduits: nbProduits,
+    siteId: siteId,
+    nom: nbLine,
+  });
+});
 
-/*app.post('/production-line/update', (req, res) => {
-    console.log(req.body.nom);
-    id = req.body.nom;
-    let nb = req.body.nbProduits;
-    const index = siteProd.lignes.findIndex(ligne => ligne.nom === id)
-    siteProd.lignes[index].nbProduits = nb;
-    res.send("data entered");
-})*/  // il faudrait passer à /production-line/:li/update
-    // supposition: en créant un middleware
+function modifyNbCp(connection, lineData) {
+  console.log(lineData);
+  connection.query(
+    `UPDATE LIGNES set nbProduits = ? WHERE siteId = ? and nom = ?;`,
+    [lineData.nbProduits, lineData.siteId, lineData.nom]
+  );
+}
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
+  console.log(`Example app listening on port ${port}`);
+});

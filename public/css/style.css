@@ -2,11 +2,13 @@ h1{
    font: 45pt;
    text-align: center; /* Centrer un texte */ 
    font-family: verdana;
+   color: blue;
  }
  h2{
     font: 20pt;
     text-align: center; /* Centrer un texte */ 
     font-family: verdana;
+    color: blue;
   }
  li{
     list-style-type: none;
