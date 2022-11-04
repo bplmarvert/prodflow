@@ -53,7 +53,8 @@
                 return `<li>Line ${obj.nom}       comprimés fabriqués: ${obj.nbProduits}</li>`
             }
 
-            function ShowSiteData(siteInfo){  //fonctionne mais pb localhost 3000 unknown
+            // ******************************************************************************* //
+            function ShowSiteData(siteInfo){  
                 //let lines = siteInfo.map(forMap).join("")  // tableau à transformer en texte
                 console.log("consoleLog de siteInfo dans ShowSiteData", siteInfo)
                 console.log(siteInfo)
@@ -84,6 +85,7 @@
                 element.innerHTML = html
             }
 
+            // ******************************************************************************* //
             // ajout d'une ligne
             let url = 'http://localhost:3000/new-production-line'
             document.querySelector("#divajout").addEventListener("submit", event => { 
@@ -131,10 +133,30 @@
                     </SELECT>`
             }
 
-
-            // ****************************************************************************************************** //
-            // modification du nombre de cp           
+            // ******************************************************************************* //
+            // modification du nombre de cp  Changement de route avec :id         
             document.querySelector("#modif").addEventListener("submit", event => {
+                event.preventDefault()
+                let idSite = document.getElementById("forSite").value
+                console.log("idSite = ", idSite, "typeof(idSite) = ", typeof(idSite));
+                let id = document.getElementById("nomli").value
+                let nbcp = document.getElementById("nbcp").value 
+                console.log ("nom ligne update : ", id)
+                let url1 = `http://localhost:3000/production-line/${id}/update`
+                console.log ("nbcp : ", nbcp)
+                console.log (url1);
+                console.log ("le fetch de l'ajout de Cp")
+                const response = fetch(url1, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({'siteId': idSite, 'nbProduits': nbcp}) //'nom': nom, au centre
+                });
+                return response.JSON;
+            })
+
+            // ******************************************************************************* //
+            // modification du nombre de cp           
+ /*           document.querySelector("#modif").addEventListener("submit", event => {
                 event.preventDefault()
                 let idSite = document.getElementById("forSite").value
                 console.log("idSite = ", idSite, "typeof(idSite) = ", typeof(idSite));
@@ -151,7 +173,7 @@
                     body: JSON.stringify({'siteId': idSite, 'nom': nom, 'nbProduits': nbcp})
                 });
                 return response.JSON;
-            })
+            })*/
         </script>
     </body>
 </html>

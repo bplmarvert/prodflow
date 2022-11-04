@@ -1,56 +1,42 @@
-const express = require('express')
-const mysql = require('mysql2')
-let dbutils = require(./src/dbutils)
-const app = express()
-const port = 3000
+const express = require("express");
+const mysql = require("mysql2");
+let dbutils = require("./src/dbutils");
+const app = express();
+const port = 3000;
 
-app.use(express.static("public"))
-app.use(express.json())
+app.use(express.static("public"));
+app.use(express.json());
 
-let connection = dbutils.createConnection("root", "Quercinus", "projetlignes")
+let connection = dbutils.createConnection("root", "Quercinus", "projetlignes");
 
-connection.query("SELECT * FROM LIGNES",(err,data) => {
-    console.log(err)
-    console.log(data)
-    connection.end()
-})
+connection.query("SELECT * FROM LIGNES", (err, data) => {
+  console.log(err);
+  console.log(data);
+  connection.end();
+});
 
-app.get('/site-info', (req, res) => {
-    res.json(siteProd)
-})
+app.get("/site-info", (req, res) => {
+  res.json(siteProd);
+});
 
-/*let siteProd = {
-    nom: 'Amilly',
-    adresse: {rue: "Rue de la big pharma", ville:"Amilly"},
-    lignes: [
-        {nom: 'l1', nbProduits: 100},
-        {nom: 'l2', nbProduits: 1000},
-        {nom: 'l3', nbProduits: 50},
-        {nom: 'l4', nbProduits: 200},
-        {nom: 'l5', nbProduits: 250},
-        {nom: 'l6', nbProduits: 500},
-        {nom: 'l7', nbProduits: 780} 
-    ]
-  };*/
+app.post("/new-production-line", (req, res) => {
+  console.log(req.body.nom);
+  let leNom = req.body.nom;
+  siteProd.lignes.push({ nom: leNom, nbProduits: 0 });
+  res.send("data entered");
+});
 
-app.post('/new-production-line', (req, res) => {
-    console.log(req.body.nom);
-    let leNom = req.body.nom;
-    siteProd.lignes.push({nom:leNom, nbProduits:0});
-    res.send("data entered");
-})
-
-// méthode /production-line/:id/update qui permet de mettre à jour 
+// méthode /production-line/:id/update qui permet de mettre à jour
 // le nombre d’unité produite par l’unité de production
 
-app.post('/production-line/:id/update', (req, res) => {
-    console.log(req.body.nom);
-    let nb = req.body.nbProduits;
-    let nl = req.body.nom;
-    const index = siteProd.lignes.findIndex(ligne => ligne.nom === nl)
-    siteProd.lignes[index].nbProduits = nb;
-    res.send("data entered");
-})
+app.post("/production-line/:id/update", (req, res) => {
+  console.log(req.body.nom);
+  let nb = req.body.nbProduits;
+  let nl = req.body.nom;
+  const index = siteProd.lignes.findIndex((ligne) => ligne.nom === nl);
+  siteProd.lignes[index].nbProduits = nb;
+  res.send("data entered");
+});
 
 /*app.post('/production-line/update', (req, res) => {
     console.log(req.body.nom);
@@ -59,10 +45,8 @@ app.post('/production-line/:id/update', (req, res) => {
     const index = siteProd.lignes.findIndex(ligne => ligne.nom === id)
     siteProd.lignes[index].nbProduits = nb;
     res.send("data entered");
-})*/  // il faudrait passer à /production-line/:li/update
-    // supposition: en créant un middleware
+})*/ // il faudrait passer à /production-line/:li/update
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
+  console.log(`Example app listening on port ${port}`);
+});

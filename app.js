@@ -36,8 +36,6 @@ app.get("/site_info", (req, res) => {
     if (err) {
       console.log("err ", err);
     }
-    //console.log("err ", err)
-    //console.log(data)
     res.json(data);
   });
 }); // version =>
@@ -84,29 +82,17 @@ app.post("/new-production-line", (req, res) => {
     if (err) {
       console.log("err ", err);
     }
-    //console.log("err ", err)
-    //console.log(data)
     res.json(data);
   });
-  /*const index = siteProd.lignes.findIndex(ligne => ligne.nom === leNom)
-    console.log("index = ",index)
-    if (index != -1)
-        res.send("Cette ligne existe déjà");
-    else{
-        siteProd.lignes.push({nom:leNom, nbProduits:0});
-        res.send("data entered");*/
 });
 
 // méthode /production-line/:id/update qui permet de mettre à jour
 // le nombre d’unité produite par l’unité de production
-
-app.post("/Change_nbCp", (req, res) => {
-  // /:siteId
-  console.log("ligne 105", req.body);
-  let nbProduits = parseInt(req.body.nbProduits); // params dans la ligne de commande
-  console.log("ligne 107 nbProduits = ", nbProduits);
-  let nbLine = req.body.nom;
-  let siteId = parseInt(req.body.siteId);
+app.post("/production-line/:id/update", (req, res) => {
+  let nbLine = req.params.id; // params dans la ligne de commande
+  //console.log("ligne 93 post /production-line/:id/update ", req.body);
+  let nbProduits = parseInt(req.body.nbProduits);
+  let siteId = parseInt(req.body.siteId); // Modif ici
   console.log(
     "nbProduits = ",
     nbProduits,

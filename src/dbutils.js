@@ -5,17 +5,10 @@ function dataSiteDB(err, data) {
 
   console.log("data = ", data);
   if (err) {
-    console.log("err dans datasiteDB", err);
+    console.log("err dans datasiteDB: ", err);
   }
-  console.log("Dans DataSiteDB");
-  //for (let i in data)
-  //    const index = siteProd.lignes.findIndex(ligne => ligne.nom === leNom)
-  //console.log("index = ",index)
-  //     siteProd.lignes.push({nom:leNom, nbProduits:0});
-  //   res.send("data entered");
-  console.log("err = ", err);
-
-  //console.log("site = ",site)
+  //console.log("Dans DataSiteDB");
+  //console.log("err = ", err);
   return data;
 }
 
@@ -26,16 +19,7 @@ function loggeMiddleware(req, res, next) {
   next();
 }
 
-/*app.get('/api/user', (request, response) =>{
-    let data = {
-        user: "lala",
-        age: 22
-    }
-    response.json(data) ; // dans postman ce sera du JSON
-})*/
-
 /*app.post("/new-user",(request, response) =>{
-
     console.log("request.body", request.body)
     response.send("request receive !")
 })*/
@@ -62,6 +46,7 @@ function lineInserted(err, data) {
 }
 
 function insertLine(connection, lineData, lineInserted) {
+  // lineInserted est un callback
   console.log(lineData);
   connection.query(
     "INSERT INTO LIGNES (nom, nbProduits, siteId) VALUES (?, ?, ?);",
