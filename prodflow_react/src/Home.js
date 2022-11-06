@@ -1,0 +1,228 @@
+import React, { useState, useEffect } from "react";
+import DisplaySite from "./DisplaySite";
+import DisplayLine from "./DisplayLine";
+//<link rel="stylesheet" href="/css/style.css" />
+
+export default function Home(props) {
+  let [siteInfo, setData] = useState([]);
+  let [nbSite, setSite] = useState(0);
+  let [selectedRadio, setSelectedRadio] = useState("");
+  let i = 0;
+
+  useEffect(() => {
+    fetch("http://localhost:3000/site_info")
+      .then((response) => response.json())
+      .then((siteInfo) => {
+        setData(siteInfo);
+        setSite(siteInfo[siteInfo.length - 1].siteId);
+      }, []); // important de mettre [] pour que ça ne soit déclenché qu'une fois
+  });
+
+  if (siteInfo.length === 0) {
+    return <div></div>;
+  }
+
+  /*for (let i = 1; i <= nbSite; i++) {
+    <displaySite i={props.i} siteInfo={props.siteInfo} />;
+  }*/
+
+  let radios = ["Ambares", "Chilly-Mazarin"]; // pour utilisation dans les boutons radios
+
+  return (
+    <div>
+      <h1>Projet</h1>
+      <h2>système de suivi des lignes de production</h2>
+      <div id="app"> </div>
+      {radios.map((site) => (
+        <span>
+          <input
+            type="radio"
+            id={site}
+            name="siteRadio"
+            onChange={(e) => setSelectedRadio(e.target.id)}
+          />
+          <label htmlFor={site}>{site}</label>
+        </span>
+      ))}
+      <DisplaySite selectedRadio={selectedRadio} siteInfo={siteInfo} />
+      {siteInfo
+        .filter((site) => site.siteNom.includes(selectedRadio))
+        .map((line, index) => (
+          <DisplayLine key={index} line={line} />
+        ))}
+    </div>
+  );
+}
+
+{
+  /*function ShowSiteData(siteInfo) {
+  console.log("consoleLog de siteInfo dans ShowSiteData", siteInfo);
+  console.log(siteInfo);
+  console.log("Dans ShowSiteData");
+  let texteHtml = "";
+  for (let i = 0; i < siteInfo.length; ++i) {
+    if (i === 0) {
+      texteHtml += `<h3>                ${siteInfo[i].siteId}) Site de:   ${siteInfo[i].siteNom} </h3>
+                            <p >Adresse:   ${siteInfo[i].adresse}   ${siteInfo[i].ville} </p> <ul>`;
+    } else {
+      if (siteInfo[i].siteNom != siteInfo[i - 1].siteNom) {
+        console.log(
+          i === 0 || (i > 0 && siteInfo[i].nom != siteInfo[i - 1].nom)
+        );
+        texteHtml += `</ul><h3>               ${siteInfo[i].siteId}) Site de:   ${siteInfo[i].siteNom} </h3>
+                            <p >Adresse:   ${siteInfo[i].adresse}   ${siteInfo[i].ville} </p><ul>`;
+        //console.log("texteHTML = ", texteHtml);
+      }
+    }
+    texteHtml += `<li>Line ${siteInfo[i].nom}       comprimés fabriqués: ${siteInfo[i].nbProduits}</li>`;
+  }
+  texteHtml += `</ul>`;
+  return texteHtml;
+}*/
+  /*        <!-- Ajout d'une ligne de production -->
+        <div id = 'divajout' >  
+            <p>Ajout d'une ligne à un site:</p>
+            <form id="ajout"> <!--</form> action="/new-production-line/" method = "POST"> -->
+                <label for="nom"> Ligne à ajouter: </label>
+                <input type="text" id="nom" name="nom" />  
+                <label for="siteId"> du site no : </label>
+                <input type="text" id="siteId" name="siteId" />                  
+                <span class = "button">
+                    <button type="submit"> OK pour ajout</button>
+                </span>          
+            </form>
+        </div>
+
+        <!-- Modification du nombre de comprimés d'une ligne de production -->
+        <div id = 'modif' >
+            <form id="modifi"> <!--</form> action="/new-production-line/" method = "POST"> -->
+                <span id="pnbli">  Ligne no: </span>
+                <input type="text" id="nomli" name="nom" />  
+                <label for="nbcp">  Nombre de comprimés: </label>
+                <input type="text" id="nbcp" name="nbcp" />  
+                <label for="forSite">  du site no :  </label>
+                <input type="text" id="forSite" name="forSite" />  
+                <span class = "button">
+                    <button type="submit"> Poster la modif </button>
+                </span>                 
+            </form>
+        </div>
+
+        <script>*/
+  /*
+            // ******************************************************************************* //
+            // ajout d'une ligne
+            let url = 'http://localhost:3000/new-production-line'
+            document.querySelector("#divajout").addEventListener("submit", event => { 
+                    event.preventDefault()
+                    let nom = document.getElementById("nom").value;
+                    let siteId = Number(document.getElementById("siteId").value);
+                    let nbProduits = 0;
+                    console.log('************************')
+                    console.log ("nom de la ligne: ", nom)
+                    console.log ("siteId: ", siteId)
+                    const response = fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({'nom': nom, 'nbProduits': nbProduits, 'siteId': siteId}) // body data type must match "Content-Type" header
+                });
+                return response.JSON;
+            })
+
+            //send a request to get Site data from the server
+               /*function selectTheLine(siteInfo){
+                //let nb = siteInfo.lignes.length;
+                //let obj = siteInfo.lignes
+                let lines = siteInfo.map(forMap).join("")  // tableau à transformer en texte
+                console.log(lines)
+                return `<p> Choix de la ligne sur laquelle modifier le nombre de comprimés: </p>
+                    <SELECT id='nbli' NAME="listline">
+                        ${lines}
+                    </SELECT>`
+            }*/
+  // Code pour utilisation de map - choix de la ligne pour mise a jour des comprimés
+  /*           function forCp(obj){
+              return `<option value="line"> ${obj.nom} </option>`
+          }
+
+          // creation du code html: affiche la liste des lignes pour choix 
+          function selectTheLine(siteInfo){
+              //let nb = siteInfo.lignes.length;
+              let obj = siteInfo; //.lignes;
+              let lines = obj.map(forCp).join("")  // tableau à transformer en texte
+              console.log(lines)
+              return `<p> Choix de la ligne sur laquelle modifier le nombre de comprimés: </p>
+                  <select id='nbli' NAME="listline">
+                      ${lines}
+                  </SELECT>`
+          }
+
+          // ******************************************************************************* //
+          // modification du nombre de cp  Changement de route avec :id         
+          document.querySelector("#modif").addEventListener("submit", event => {
+              event.preventDefault()
+              let idSite = document.getElementById("forSite").value
+              console.log("idSite = ", idSite, "typeof(idSite) = ", typeof(idSite));
+              let id = document.getElementById("nomli").value
+              let nbcp = document.getElementById("nbcp").value 
+              console.log ("nom ligne update : ", id)
+              let url1 = `http://localhost:3000/production-line/${id}/update`
+              console.log ("nbcp : ", nbcp)
+              console.log (url1);
+              console.log ("le fetch de l'ajout de Cp")
+              const response = fetch(url1, {
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify({'siteId': idSite, 'nbProduits': nbcp}) //'nom': nom, au centre
+              });
+              return response.JSON;
+          })
+
+          // ******************************************************************************* //
+          // modification du nombre de cp           
+/*           document.querySelector("#modif").addEventListener("submit", event => {
+              event.preventDefault()
+              let idSite = document.getElementById("forSite").value
+              console.log("idSite = ", idSite, "typeof(idSite) = ", typeof(idSite));
+              let nom = document.getElementById("nomli").value
+              let nbcp = document.getElementById("nbcp").value 
+              console.log ("nom ligne update : ", nom)
+              let url1 = `http://localhost:3000/Change_nbCp`///${nom}/${nbcp}`
+              console.log ("nbcp : ", nbcp)
+              console.log (url1);
+              console.log ("le fetch de l'ajout de Cp")
+              const response = fetch(url1, {
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify({'siteId': idSite, 'nom': nom, 'nbProduits': nbcp})
+              });
+              return response.JSON;
+          })*/
+  /*     </script>
+  </body>
+</html>
+<!--<html>
+  <body>
+      <script>
+          function addToPage(userData){
+              //1.utiliser les données pour générer du html
+              let html = `<p>${userData.firstname} - ${userData.age}`
+              
+              //2. Ajouter le html à la page
+              //document.createElement
+              let div = document.createElement("div")
+              //3. innerHtml
+              div.innerHTML = html
+              let body = document.querySelector("body")    
+              //4. append
+              body.appendChild(div)
+              //document.body.append(div)
+          }
+
+          fetch('/user')
+              .then(response => response.json())
+              .then(addToPage)
+      </script>
+  </body>
+        </html> -->*/
+}
